@@ -14,6 +14,7 @@
 #include <caffe2/operators/transpose_op.h>
 #include <caffe2/operators/reshape_op.h>
 #include "caffe2/operators/prior_box_op.h"
+#include "caffe2/operators/detection_output_op.h"
 
 // can add more non-IDEEP operators if needed
 namespace caffe2 {
@@ -45,6 +46,9 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(
     PriorBox,
     IDEEPFallbackOp<PriorBoxOp<float, CPUContext>>);
+REGISTER_IDEEP_OPERATOR(
+    DetectionOutput,
+    IDEEPFallbackOp<DetectionOutputOp<float, CPUContext>>);
 
 // filter operators
 REGISTER_IDEEP_OPERATOR(
