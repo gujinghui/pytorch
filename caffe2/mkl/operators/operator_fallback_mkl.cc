@@ -13,6 +13,7 @@
 #include "caffe2/operators/reshape_op.h"
 #include "caffe2/operators/softmax_op.h"
 #include "caffe2/operators/utility_ops.h"
+#include "caffe2/operators/given_tensor_fill_op.h"
 
 namespace caffe2 {
 namespace {
@@ -55,6 +56,9 @@ REGISTER_MKL_OPERATOR(
 REGISTER_MKL_OPERATOR(
     MSRAFill,
     mkl::MKLFallbackOp<MSRAFillOp<float, CPUContext>>);
+REGISTER_MKL_OPERATOR(
+    GivenTensorFill,
+    mkl::MKLFallbackOp<GivenTensorFillOp<float, CPUContext>>);
 REGISTER_MKL_OPERATOR(Load, mkl::MKLFallbackOp<LoadOp<CPUContext>>);
 REGISTER_MKL_OPERATOR(Save, mkl::MKLFallbackOp<SaveOp<CPUContext>>);
 
