@@ -19,7 +19,6 @@
 #include <caffe2/operators/flatten_op.h>
 #include <caffe2/operators/generate_proposals_op.h>
 #include <caffe2/operators/given_tensor_fill_op.h>
-#include <caffe2/operators/leaky_relu_op.h>
 #include <caffe2/operators/load_save_op.h>
 #include <caffe2/operators/loss_op.h>
 #include <caffe2/operators/pad_op.h>
@@ -113,7 +112,7 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(
     PRelu,
     IDEEPFallbackOp<PReluOp<float, CPUContext>>);
-  
+
 // ctc decoder operators
 REGISTER_IDEEP_OPERATOR(
     CTCGreedyDecoder,
@@ -121,7 +120,6 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(
     CTCBeamSearchDecoder,
     IDEEPFallbackOp<CTCBeamSearchDecoderOp<CPUContext>>);
-
 REGISTER_IDEEP_OPERATOR(
     AveragedLossGradient,
     IDEEPFallbackOp<AveragedLossGradient<float, CPUContext>>);
@@ -137,9 +135,6 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(
     LearningRate,
     IDEEPFallbackOp<LearningRateOp<float, CPUContext>>);
-REGISTER_IDEEP_OPERATOR(
-    LeakyRelu,
-    IDEEPFallbackOp<LeakyReluOp<float, CPUContext>>);
 REGISTER_IDEEP_OPERATOR(
     Mul,
     IDEEPFallbackOp<
@@ -173,9 +168,6 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(
     ConvTransposeGradient,
     IDEEPFallbackOp<ConvTransposeGradientOp<float, CPUContext>>);
-REGISTER_IDEEP_OPERATOR(
-    LeakyReluGradient,
-    IDEEPFallbackOp<LeakyReluGradientOp<float, CPUContext>>);
 REGISTER_IDEEP_OPERATOR(
     MulGradient,
     IDEEPFallbackOp<BinaryElementwiseGradientOp<
