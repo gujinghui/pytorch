@@ -327,10 +327,6 @@ if (USE_IDEEP)
       endif()
     endif()
 
-    if (NOT MKLDNN_LIBRARY_TYPE)
-      set(MKLDNN_LIBRARY_TYPE STATIC CACHE STRING "Build mkl-dnn as static lib")
-    endif()
-
     # If we cannot find MKL, we will use the Intel MKL Small library comes with ${MKLDNN_ROOT}/external
     file(GLOB_RECURSE MKLML_INNER_INCLUDE_DIR ${MKLDNN_ROOT}/external/*/mkl_vsl.h)
     if(NOT MKL_FOUND AND MKLML_INNER_INCLUDE_DIR)
@@ -369,21 +365,18 @@ if (USE_IDEEP)
     find_package_handle_standard_args(IDEEP DEFAULT_MSG ${__ideep_looked_for})
 
     if(IDEEP_FOUND)
-      if (MKLDNN_LIBRARY_TYPE STREQUAL STATIC)
-        set(MKLDNN_LIB "${CMAKE_STATIC_LIBRARY_PREFIX}mkldnn${CMAKE_STATIC_LIBRARY_SUFFIX}")
-      else()
-        set(MKLDNN_LIB "${CMAKE_SHARED_LIBRARY_PREFIX}mkldnn${CMAKE_SHARED_LIBRARY_SUFFIX}")
-      endif()
+      # Always static build mkl-dnn
+      set(MKLDNN_LIBRARY_TYPE STATIC CACHE STRING "Build mkl-dnn as static lib" FORCE)
+      set(MKLDNN_LIB "${CMAKE_STATIC_LIBRARY_PREFIX}mkldnn${CMAKE_STATIC_LIBRARY_SUFFIX}")
       list(APPEND IDEEP_LIBRARIES "${PROJECT_BINARY_DIR}/lib/${MKLDNN_LIB}")
       # message(STATUS "Found IDEEP (include: ${IDEEP_INCLUDE_DIR}, lib: ${IDEEP_LIBRARIES})")
       set(CAFFE2_USE_IDEEP 1)
       list(APPEND MKL_INCLUDE_DIR ${IDEEP_INCLUDE_DIR})
       list(APPEND MKL_LIBRARIES ${IDEEP_LIBRARIES})
+      add_subdirectory(${MKLDNN_ROOT})
     else()
       message(FATAL_ERROR "Did not find IDEEP files!")
     endif()
-
-    add_subdirectory(${MKLDNN_ROOT})
 
     caffe_clear_vars(__ideep_looked_for __mklml_inner_libs)
   else()

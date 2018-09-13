@@ -5,7 +5,6 @@ if (NOT CAFFE2_CMAKE_BUILDING_WITH_MAIN_REPO)
   option(USE_CUDA "Use CUDA" ON)
   option(USE_ROCM "Use ROCm" OFF)
   option(USE_CUDNN "Use cuDNN" ON)
-  option(USE_MKLDNN "Use MKLDNN" ON)
   cmake_dependent_option(
       USE_CUDNN "Use cuDNN" ON
       "USE_CUDA" OFF)

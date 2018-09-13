@@ -111,7 +111,7 @@ option(USE_SYSTEM_EIGEN_INSTALL
 option(USE_TENSORRT "Using Nvidia TensorRT library" OFF)
 option(USE_ZMQ "Use ZMQ" OFF)
 option(USE_ZSTD "Use ZSTD" OFF)
-option(USE_MKLDNN "Use MKLDNN" OFF)
+option(USE_MKLDNN "Use MKLDNN with enforcing USE_IDEEP ON" OFF)
 option(USE_IDEEP "Use IDEEP interface in MKL BLAS" ON)
 option(USE_MKLML "Use MKLML interface in MKL BLAS" ON)
 option(USE_DISTRIBUTED "Use distributed" ON)
@@ -132,6 +132,10 @@ SET(ONNX_NAMESPACE "onnx_c2" CACHE STRING "onnx namespace")
 
 if (ANDROID OR IOS)
   set(BUILD_ATEN_MOBILE ON)
+endif()
+
+if (USE_MKLDNN)
+  set(USE_IDEEP ON CACHE BOOL "Enforce to enable USE_IDEEP" FORCE)
 endif()
 
 # ---[ CMake scripts + modules
