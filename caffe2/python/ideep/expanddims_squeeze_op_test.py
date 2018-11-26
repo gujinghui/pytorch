@@ -13,7 +13,7 @@ import caffe2.python.ideep_test_util as mu
 
 
 @unittest.skipIf(not workspace.C.use_mkldnn, "No MKLDNN support.")
-class SqueezeTest(hu.HypothesisTestCase):
+class ExpandDimsSqueezeTest(hu.HypothesisTestCase):
     @given(
         squeeze_dims=st.lists(st.integers(0, 3), min_size=1, max_size=3),
         inplace=st.booleans(),
@@ -27,6 +27,25 @@ class SqueezeTest(hu.HypothesisTestCase):
         X = np.random.rand(*shape).astype(np.float32)
         op = core.CreateOperator(
             "Squeeze", "X", "X" if inplace else "Y", dims=squeeze_dims
+        )
+        self.assertDeviceChecks(dc, op, [X], [0])
+
+    @given(
+        squeeze_dims=st.lists(st.integers(0, 3), min_size=1, max_size=3),
+        inplace=st.booleans(),
+        **mu.gcs
+    )
+    def test_expand_dims(self, squeeze_dims, inplace, gc, dc):
+        oshape = [
+            1 if dim in squeeze_dims else np.random.randint(2, 5)
+            for dim in range(4)
+        ]
+        nshape = [s for s in oshape if s!=1]
+        expand_dims = [i for i in range(len(oshape)) if oshape[i]==1]
+
+        X = np.random.rand(*nshape).astype(np.float32)
+        op = core.CreateOperator(
+            "ExpandDims", "X", "X" if inplace else "Y", dims=expand_dims
         )
         self.assertDeviceChecks(dc, op, [X], [0])
 
