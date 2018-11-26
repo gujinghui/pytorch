@@ -71,6 +71,22 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(
     GivenTensorFill,
     IDEEPFallbackOp<GivenTensorFillOp<float, CPUContext>>);
+// Not supported tensor types in below FillOp
+REGISTER_IDEEP_OPERATOR(
+    GivenTensorDoubleFill,
+    IDEEPFallbackOp<GivenTensorFillOp<double, CPUContext>, SkipIndices<0>>);
+REGISTER_IDEEP_OPERATOR(
+    GivenTensorBoolFill,
+    IDEEPFallbackOp<GivenTensorFillOp<bool, CPUContext>, SkipIndices<0>>);
+REGISTER_IDEEP_OPERATOR(
+    GivenTensorIntFill,
+    IDEEPFallbackOp<GivenTensorFillOp<int, CPUContext>, SkipIndices<0>>);
+REGISTER_IDEEP_OPERATOR(
+    GivenTensorInt64Fill,
+    IDEEPFallbackOp<GivenTensorFillOp<int64_t, CPUContext>, SkipIndices<0>>);
+REGISTER_IDEEP_OPERATOR(
+    GivenTensorStringFill,
+    IDEEPFallbackOp<GivenTensorFillOp<std::string, CPUContext>, SkipIndices<0>>);
 REGISTER_IDEEP_OPERATOR(Load, IDEEPFallbackOp<LoadOp<CPUContext>>);
 REGISTER_IDEEP_OPERATOR(Save, IDEEPFallbackOp<SaveOp<CPUContext>>);
 
