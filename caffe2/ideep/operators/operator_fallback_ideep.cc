@@ -34,6 +34,7 @@
 #include <caffe2/sgd/adam_op.h>
 #include <caffe2/sgd/iter_op.h>
 #include <caffe2/sgd/learning_rate_op.h>
+#include <caffe2/operators/slice_op.h>
 
 // can add more non-IDEEP operators if needed
 namespace caffe2 {
@@ -54,6 +55,13 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(Flatten, IDEEPFallbackOp<FlattenOp<CPUContext>>);
 REGISTER_IDEEP_OPERATOR(ResizeLike, IDEEPFallbackOp<ResizeLikeOp<CPUContext>>);
 REGISTER_IDEEP_OPERATOR(Transpose, IDEEPFallbackOp<TransposeOp<CPUContext>>);
+REGISTER_IDEEP_OPERATOR(
+    ScatterAssign,
+    IDEEPFallbackOp<ScatterAssignOp<CPUContext>, SkipIndices<0>>);
+REGISTER_IDEEP_OPERATOR(
+    Slice,
+    IDEEPFallbackOp<SliceOp<CPUContext>, SkipIndices<0>>);
+
 
 // filter operators
 REGISTER_IDEEP_OPERATOR(
