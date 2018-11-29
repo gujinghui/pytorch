@@ -22,11 +22,21 @@ class IDEEPReshapeOp final : public IDEEPOperator {
 
       // shape info live on CPU
       auto& shape = OperatorBase::Input<Tensor>(1, CPU);
-      CAFFE_ENFORCE(shape.ndim() == 1, "Shape should be 1-D");
-      const int* shape_data = shape.template data<int>();
-
+      CAFFE_ENFORCE(shape.dim() == 1, "Shape should be 1-D");
       actual_new_shape.reserve(shape.size());
-      actual_new_shape.assign(shape_data, shape_data + shape.size());
+      switch (TypeMetaToDataType(shape.dtype())) {
+        case TensorProto_DataType_INT32: {
+          const auto* data32 = shape.template data<int32_t>();
+          actual_new_shape.assign(data32, data32 + shape.size());
+          break; }
+        case TensorProto_DataType_INT64: {
+          const auto* data64 = shape.template data<int64_t>();
+          actual_new_shape.assign(data64, data64 + shape.size());
+          break; }
+        default:
+          CAFFE_THROW("Unsupported data type!");
+      }
+
     } else {
       CAFFE_ENFORCE(
           OperatorBase::HasArgument("shape"), "Argument `shape` is missing.");
