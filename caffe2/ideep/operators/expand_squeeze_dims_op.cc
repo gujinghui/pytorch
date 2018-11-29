@@ -1,4 +1,5 @@
 #include <caffe2/ideep/ideep_utils.h>
+#include <caffe2/ideep/operators/operator_fallback_ideep.h>
 #include "caffe2/operators/expand_squeeze_dims_op.h"
 
 namespace caffe2 {
@@ -7,10 +8,12 @@ class IDEEPExpandDimsOp final : public IDEEPOperator {
  public:
   USE_IDEEP_DEF_ALIASES();
   USE_IDEEP_OPERATOR_FUNCTIONS();
+  using FALLBACK_OP = IDEEPFallbackOp<ExpandDimsOp<CPUContext>, SkipIndices<0>>;
 
   IDEEPExpandDimsOp(const OperatorDef& operator_def, Workspace* ws)
       : IDEEPOperator(operator_def, ws),
-        dims_(OperatorBase::GetRepeatedArgument<int>("dims")) {
+        fallback_(operator_def, ws) {
+    dims_ = OperatorBase::GetRepeatedArgument<int>("dims");
     auto originalSize = dims_.size();
     CAFFE_ENFORCE(originalSize > 0, "Parameter `dims` must be provided.");
     std::sort(dims_.begin(), dims_.end());
@@ -20,16 +23,13 @@ class IDEEPExpandDimsOp final : public IDEEPOperator {
     }
     CAFFE_ENFORCE(dims_.front() >= 0, "Dimension ids must be non-negative.");
   }
+  virtual ~IDEEPExpandDimsOp() {}
 
   bool RunOnDevice() override {
-    if (OperatorBase::InputBlob(INPUT).template IsType<itensor>()) {
-      return RunWithIDEEPTensor();
+    if (!OperatorBase::InputBlob(INPUT).template IsType<itensor>()) {
+      return fallback_.Run(0);
     }
 
-    return RunWithCPUTensor();
-  }
-
-  bool RunWithIDEEPTensor() {
     const auto& X = Input(INPUT);
     auto* Y = Output(OUTPUT);
     if (&X != Y) {
@@ -56,32 +56,9 @@ class IDEEPExpandDimsOp final : public IDEEPOperator {
     return true;
   }
 
-  bool RunWithCPUTensor() {
-    const auto& X = OperatorBase::Input<Tensor>(INPUT, CPU);
-    auto* Y = OperatorBase::Output<Tensor>(OUTPUT, CPU);
-    Y->CopyFrom(X, &context_);
-    if (dims_.empty()) {
-      return true;
-    }
-
-    auto newDims = X.sizes().vec();
-    CAFFE_ENFORCE_GE(
-        newDims.size() + dims_.size(),
-        dims_.back() + 1,
-        "Input needs at least ",
-        (1 + dims_.back() - dims_.size()),
-        " dimensions given `dims`.");
-
-    for (const auto dim : dims_) {
-      newDims.insert(newDims.begin() + dim, 1);
-    }
-
-    Y->Reshape(newDims);
-    return true;
-  }
-
  private:
   vector<int> dims_;
+  FALLBACK_OP fallback_;
 
   INPUT_TAGS(INPUT);
   OUTPUT_TAGS(OUTPUT);
@@ -92,10 +69,12 @@ class IDEEPSqueezeOp final : public IDEEPOperator {
  public:
   USE_IDEEP_DEF_ALIASES();
   USE_IDEEP_OPERATOR_FUNCTIONS();
+  using FALLBACK_OP = IDEEPFallbackOp<SqueezeOp<CPUContext>, SkipIndices<0>>;
 
   IDEEPSqueezeOp(const OperatorDef& operator_def, Workspace* ws)
       : IDEEPOperator(operator_def, ws),
-        dims_(OperatorBase::GetRepeatedArgument<int>("dims")) {
+        fallback_(operator_def, ws) {
+    dims_ = OperatorBase::GetRepeatedArgument<int>("dims");
     auto originalSize = dims_.size();
     CAFFE_ENFORCE(originalSize > 0, "Parameter `dims` must be provided.");
 
@@ -106,18 +85,13 @@ class IDEEPSqueezeOp final : public IDEEPOperator {
     }
     CAFFE_ENFORCE(dims_.front() >= 0, "Dimension ids must be non-negative.");
   }
-
   virtual ~IDEEPSqueezeOp() {}
 
   bool RunOnDevice() override {
-    if (OperatorBase::InputBlob(INPUT).template IsType<itensor>()) {
-      return RunWithIDEEPTensor();
+    if (!OperatorBase::InputBlob(INPUT).template IsType<itensor>()) {
+      return fallback_.Run(0);
     }
 
-    return RunWithCPUTensor();
-  }
-
-  bool RunWithIDEEPTensor() {
     const auto& X = Input(INPUT);
     auto* Y = Output(OUTPUT);
 
@@ -140,26 +114,9 @@ class IDEEPSqueezeOp final : public IDEEPOperator {
     return true;
   }
 
-  bool RunWithCPUTensor() {
-    const auto& X = OperatorBase::Input<Tensor>(INPUT, CPU);
-    auto* Y = OperatorBase::Output<Tensor>(OUTPUT, CPU);
-    Y->CopyFrom(X, &context_);
-
-    CAFFE_ENFORCE_GT(
-        X.dim(),
-        dims_.back(),
-        "Input needs at least ",
-        (dims_.back() + 1),
-        " dimensions.");
-
-    std::vector<int> newDims =
-      SqueezeOp<IDEEPContext>::ComputeDims(X.sizes(), dims_);
-    Y->Reshape(newDims);
-    return true;
-  }
-
  private:
   vector<int> dims_;
+  FALLBACK_OP fallback_;
 
   INPUT_TAGS(INPUT);
   OUTPUT_TAGS(OUTPUT);
