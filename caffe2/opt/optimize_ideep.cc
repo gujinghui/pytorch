@@ -245,11 +245,13 @@ void fuseConvSumForIdeep(repr::NNModule* nn, caffe2::Workspace* ws) {
       continue;
     }
 
-    if (!repr::nn::is<repr::Sum>(sumNode)) {
+    // XXX: [Caution] on IDEEP device, only element-wise Add operator is
+    // supported yet. It totally works as element-wise sum without scalar broadcast.
+    if (!repr::nn::is<repr::Sum>(sumNode) && !isOpType(sumNode, "Add")) {
       continue;
     }
 
-    auto sum = repr::nn::get<repr::Sum>(sumNode);
+    auto sum = repr::nn::get<repr::NeuralNetOperator>(sumNode);
     if (!isOnIdeepDevice(*sum)) {
       LOG(WARNING) << "Not a IDEEP operator";
       continue;
