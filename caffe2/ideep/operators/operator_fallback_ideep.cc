@@ -31,10 +31,12 @@
 #include <caffe2/operators/transpose_op.h>
 #include <caffe2/operators/affine_channel_op.h>
 #include <caffe2/operators/stop_gradient.h>
+#include <caffe2/operators/slice_op.h>
+#include <caffe2/operators/gather_op.h>
+
 #include <caffe2/sgd/adam_op.h>
 #include <caffe2/sgd/iter_op.h>
 #include <caffe2/sgd/learning_rate_op.h>
-#include <caffe2/operators/slice_op.h>
 
 // can add more non-IDEEP operators if needed
 namespace caffe2 {
@@ -61,6 +63,9 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(
     Slice,
     IDEEPFallbackOp<SliceOp<CPUContext>, SkipIndices<0>>);
+REGISTER_IDEEP_OPERATOR(
+    Gather,
+    IDEEPFallbackOp<GatherOp<CPUContext>, SkipIndices<0>>);
 
 
 // filter operators
