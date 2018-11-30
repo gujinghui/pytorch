@@ -57,15 +57,11 @@ REGISTER_IDEEP_OPERATOR(
 REGISTER_IDEEP_OPERATOR(Flatten, IDEEPFallbackOp<FlattenOp<CPUContext>>);
 REGISTER_IDEEP_OPERATOR(ResizeLike, IDEEPFallbackOp<ResizeLikeOp<CPUContext>>);
 REGISTER_IDEEP_OPERATOR(Transpose, IDEEPFallbackOp<TransposeOp<CPUContext>>);
+REGISTER_IDEEP_OPERATOR(Slice, IDEEPFallbackOp<SliceOp<CPUContext>>);
+REGISTER_IDEEP_OPERATOR(Gather, IDEEPFallbackOp<GatherOp<CPUContext>>);
 REGISTER_IDEEP_OPERATOR(
     ScatterAssign,
-    IDEEPFallbackOp<ScatterAssignOp<CPUContext>, SkipIndices<0>>);
-REGISTER_IDEEP_OPERATOR(
-    Slice,
-    IDEEPFallbackOp<SliceOp<CPUContext>, SkipIndices<0>>);
-REGISTER_IDEEP_OPERATOR(
-    Gather,
-    IDEEPFallbackOp<GatherOp<CPUContext>, SkipIndices<0>>);
+    IDEEPFallbackOp<ScatterAssignOp<CPUContext>>);
 
 
 // filter operators
