@@ -29,7 +29,7 @@ class IDEEPConcatOp final : public IDEEPOperator {
   virtual ~IDEEPConcatOp() {}
 
   bool RunOnDevice() override {
-    int num_tensor_cpu = 0;
+    bool fallback_to_cpu = false;
     vector<itensor> inputs_itensor;
 
     for (int i = 0; i < InputSize(); ++i) {
@@ -45,11 +45,12 @@ class IDEEPConcatOp final : public IDEEPOperator {
         auto& tensor_cpu = OperatorBase::Input<Tensor>(i, CPU);
         if (tensor_cpu.sizes().size() == 0 || tensor_cpu.numel() == 0)
           continue;
-        num_tensor_cpu ++;
+        fallback_to_cpu = true;
+        break;
       }
     }
 
-    if (num_tensor_cpu == 0) {
+    if (!fallback_to_cpu) {
       auto* output = Output(OUTPUT);
       auto* axis_info = OperatorBase::Output<Tensor>(AXIS_INFO, CPU);
       axis_info->Resize(vector<int64_t>(1, InputSize()));
@@ -59,13 +60,10 @@ class IDEEPConcatOp final : public IDEEPOperator {
       for (int i = 0; i < axis_vdata.size(); i++) {
         axis_data[i] = axis_vdata[i];
       }
-    } else if (inputs_itensor.size() == 0) {
-      fallback_.Run(0);
-    } else {
-      CAFFE_THROW("Mixed with ideep and cpu tensor is not supported");
+      return true;
     }
 
-    return true;
+    return fallback_.Run(0);
   }
 
  private:
