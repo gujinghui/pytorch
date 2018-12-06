@@ -6,6 +6,11 @@
 
 #include "caffe2/utils/math.h"
 
+#ifdef CAFFE2_USE_MKLDNN
+#include <caffe2/ideep/operators/operator_fallback_ideep.h>
+#include <caffe2/ideep/utils/ideep_operator.h>
+#endif
+
 namespace caffe2 {
 
 namespace {
@@ -127,6 +132,14 @@ OPERATOR_SCHEMA(ReduceMax)
 
 OPERATOR_SCHEMA(ReduceMaxGradient).NumInputs(3).NumOutputs(1);
 
+#ifdef CAFFE2_USE_MKLDNN
+REGISTER_IDEEP_OPERATOR(
+    ReduceSum,
+    IDEEPFallbackOp<ReduceOp<
+        TensorTypes<std::int32_t, std::int64_t, float, double>,
+        CPUContext, SumReducer<CPUContext>>>);
+#endif
+
 REGISTER_CPU_OPERATOR(
     ReduceSum,
     ReduceOp<
@@ -210,6 +223,15 @@ Y:
     .Output(0, "Y", "(*Tensor`<float>`*): reduced tensor");
 
 OPERATOR_SCHEMA(ReduceSumGradient).NumInputs(3).NumOutputs(1);
+
+
+
+#ifdef CAFFE2_USE_MKLDNN
+REGISTER_IDEEP_OPERATOR(
+    ReduceMean,
+    IDEEPFallbackOp<
+        ReduceOp<TensorTypes<float>, CPUContext, MeanReducer<CPUContext>>>);
+#endif
 
 REGISTER_CPU_OPERATOR(
     ReduceMean,
