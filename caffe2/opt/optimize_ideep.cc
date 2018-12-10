@@ -63,6 +63,15 @@ bool shouldFuseConv(const repr::Conv &conv) {
   return isOnIdeepDevice(conv);
 }
 
+bool isOpType(const repr::NNGraph::NodeRef& nodeRef, string typeName) {
+  if (!repr::nn::is<repr::NeuralNetOperator>(nodeRef)) {
+    return false;
+  }
+  auto op = repr::nn::get<repr::NeuralNetOperator>(nodeRef);
+  auto opDef = getOpDef(*op);
+  return opDef.type() == typeName;
+}
+
 void resetConvForFusion(repr::NNGraph::NodeRef convNode, int fusion_type) {
   // Fusion types:
   // FUSION_CONV_RELU = 1

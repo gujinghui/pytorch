@@ -62,19 +62,8 @@ REGISTER_IDEEP_OPERATOR(
     ChannelShuffle,
     IDEEPFallbackOp<ChannelShuffleOp<float, CPUContext>>);
 REGISTER_IDEEP_OPERATOR(
-    LabelCrossEntropy,
-    IDEEPFallbackOp<LabelCrossEntropyOp<float, CPUContext>>);
-REGISTER_IDEEP_OPERATOR(
-    AveragedLoss,
-    IDEEPFallbackOp<AveragedLoss<float, CPUContext>, SkipIndices<0>>);
-REGISTER_IDEEP_OPERATOR(
     ConvTranspose,
     IDEEPFallbackOp<ConvTransposeOp<float, CPUContext>>);
-REGISTER_IDEEP_OPERATOR(Flatten, IDEEPFallbackOp<FlattenOp<CPUContext>>);
-REGISTER_IDEEP_OPERATOR(ResizeLike, IDEEPFallbackOp<ResizeLikeOp<CPUContext>>);
-REGISTER_IDEEP_OPERATOR(Transpose, IDEEPFallbackOp<TransposeOp<CPUContext>>);
-REGISTER_IDEEP_OPERATOR(Slice, IDEEPFallbackOp<SliceOp<CPUContext>>);
-REGISTER_IDEEP_OPERATOR(Gather, IDEEPFallbackOp<GatherOp<CPUContext>>);
 REGISTER_IDEEP_OPERATOR(
     TensorProtosDBInput,
     IDEEPFallbackOp<TensorProtosDBInput<CPUContext>>);
@@ -231,10 +220,6 @@ REGISTER_IDEEP_OPERATOR(
     AddGradient,
     IDEEPFallbackOp<BinaryElementwiseGradientOp<
       NumericTypes, CPUContext, AddFunctor<CPUContext>>>);
-REGISTER_IDEEP_OPERATOR(
-    MulGradient,
-    IDEEPFallbackOp<BinaryElementwiseGradientOp<
-      NumericTypes, CPUContext, MulFunctor<CPUContext>>>);
 REGISTER_IDEEP_OPERATOR(
     StopGradient,
     IDEEPFallbackOp<StopGradientOp<CPUContext>>);
